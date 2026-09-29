@@ -416,7 +416,7 @@ export function OllamaPluginCard(props: OllamaPluginCardProps): ReactNode {
   }, [snapshot.status])
   useEffect(() => () => { props.closeModelPicker() }, [props.closeModelPicker])
 
-  if (snapshot.status === 'unavailable') {
+  if (snapshot.status === 'unavailable' && props.mode !== 'detail') {
     return (
       <li style={cardStyle} data-provider-card="" data-provider-role="llm">
         <style>{providerUiCss}</style>
@@ -447,6 +447,30 @@ export function OllamaPluginCard(props: OllamaPluginCardProps): ReactNode {
     )
   }
   const title = t('title')
+  if (props.mode === 'detail' && props.template !== undefined && props.copy !== undefined
+      && (snapshot.status !== 'ready' || draft === undefined)) {
+    const Detail = props.template
+    const configured = credential?.configured === true
+    return (
+      <Detail
+        name={title}
+        role="llm"
+        mark={<BrandMark />}
+        copy={props.copy}
+        notice={snapshot.status === 'unavailable' ? t('remoteAccess') : t('description')}
+        account={{
+          state: configured ? 'configured' : 'unconnected',
+          label: configured ? t('summaryOn') : t('apiKeyUnset'),
+        }}
+        quota={{
+          status: props.usage?.status ?? 'loading',
+          windows: props.usage?.windows ?? [],
+          ...(props.onRefresh === undefined ? {} : { onRefresh: props.onRefresh }),
+        }}
+        models={{ count: 0, items: [], sortDisabled: true, chooseDisabled: true, addDisabled: true }}
+      />
+    )
+  }
   const disabled = snapshot.status !== 'ready' || !snapshot.writable || busy
   const keyInvalid = apiKey.length > 0 && apiKey.trim().length === 0
   const customModels = snapshot.user !== undefined

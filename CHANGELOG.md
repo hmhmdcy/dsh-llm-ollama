@@ -1,3 +1,7 @@
+## v0.6.28
+
+- Keep the shared provider detail page while settings are loading or unavailable.
+
 ## v0.6.27
 
 - Verify compatibility with official DeepSeek Harness `0.1.7-rc.1` and accept DSH package versions from `0.1.7-alpha.2` onward.

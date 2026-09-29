@@ -22,7 +22,7 @@ DeepSeek Harness 的 Ollama Cloud 集成。聊天通过共享的 pi-ai adapter �
 dsh plugin --profile web add --force \
   https://github.com/NOirBRight/dsh-llm-providers-ui/releases/download/v0.2.13/dsh-llm-providers-ui-0.2.13.tgz
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-llm-ollama/releases/download/v0.6.27/dsh-llm-ollama-0.6.27.tgz
+  https://github.com/NOirBRight/dsh-llm-ollama/releases/download/v0.6.28/dsh-llm-ollama-0.6.28.tgz
 dsh web
 ~~~
 
@@ -181,7 +181,7 @@ Latest（Owner + 本插件；Web 必须一起装）：
 dsh plugin --profile web add --force \
   https://github.com/NOirBRight/dsh-llm-providers-ui/releases/latest/download/dsh-llm-providers-ui-0.2.13.tgz
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-llm-ollama/releases/latest/download/dsh-llm-ollama-0.6.27.tgz
+  https://github.com/NOirBRight/dsh-llm-ollama/releases/latest/download/dsh-llm-ollama-0.6.28.tgz
 ~~~
 
 固定版本（可复现）：
@@ -190,7 +190,7 @@ dsh plugin --profile web add --force \
 dsh plugin --profile web add --force \
   https://github.com/NOirBRight/dsh-llm-providers-ui/releases/download/v0.2.13/dsh-llm-providers-ui-0.2.13.tgz
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-llm-ollama/releases/download/v0.6.27/dsh-llm-ollama-0.6.27.tgz
+  https://github.com/NOirBRight/dsh-llm-ollama/releases/download/v0.6.28/dsh-llm-ollama-0.6.28.tgz
 ~~~
 
 更新、卸载与验证：
@@ -200,7 +200,7 @@ dsh plugin --profile web add --force \
 dsh plugin --profile web add --force \
   https://github.com/NOirBRight/dsh-llm-providers-ui/releases/latest/download/dsh-llm-providers-ui-0.2.13.tgz
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-llm-ollama/releases/latest/download/dsh-llm-ollama-0.6.27.tgz
+  https://github.com/NOirBRight/dsh-llm-ollama/releases/latest/download/dsh-llm-ollama-0.6.28.tgz
 # 验证加载与版本
 dsh plugin --profile web list
 dsh plugin --profile web doctor
@@ -212,4 +212,4 @@ dsh plugin --profile web remove dsh-llm-ollama
 
 回滚：重新执行固定版本 v0.6.27 命令，确认插件列表后只重启一次 Web 服务。失败时查看 journalctl --user -u dsh-web.service 与 dsh plugin --profile web doctor，不要把源码 checkout 写入 production profile。
 
-Release 与完整性：[v0.6.27](https://github.com/NOirBRight/dsh-llm-ollama/releases/tag/v0.6.27) · [SHA256SUMS](https://github.com/NOirBRight/dsh-llm-ollama/releases/download/v0.6.27/SHA256SUMS)。
+Release 与完整性：[v0.6.28](https://github.com/NOirBRight/dsh-llm-ollama/releases/tag/v0.6.28) · [SHA256SUMS](https://github.com/NOirBRight/dsh-llm-ollama/releases/download/v0.6.28/SHA256SUMS)。
