@@ -1,3 +1,8 @@
+## v0.6.29-piai0.87.1
+
+- **Compatibility fork.** Pin `@earendil-works/pi-ai` to `^0.87.1` and type the wrapped stream functions against `TranscriptContext`. pi-ai 0.86+ folds `systemPrompt`/`tools` into a leading system message before calling a provider, so a provider built from `^0.85.1` read that transcript with the legacy `Context` assumptions and every chat request failed in the token estimator with `Cannot read properties of undefined (reading 'length')` (surfaced by the harness as `PI_AI_ERROR`, zero tokens). Upstream: [NOirBRight/dsh-llm-ollama#6](https://github.com/NOirBRight/dsh-llm-ollama/issues/6).
+- No runtime code change: `lib/` is upstream `0.6.28`; only the dependency range and the source-level context type differ. `pnpm-lock.yaml` still pins `0.85.1` and must be regenerated where the Host packages resolve.
+
 ## v0.6.28
 
 - Keep the shared provider detail page while settings are loading or unavailable.

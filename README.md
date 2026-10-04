@@ -2,6 +2,44 @@
 
 English | [中文](README.zh.md)
 
+> **Fork note — `hmhmdcy/dsh-llm-ollama`.** This fork aligns the pi-ai dependency with the
+> Host: `@earendil-works/pi-ai` is pinned to `^0.87.1`. pi-ai 0.86+ folds `systemPrompt` and
+> `tools` into a leading **system message** before calling a provider, so a provider built
+> from `^0.85.1` read that transcript with the legacy `Context` assumptions and every chat
+> request died in the token estimator with
+> `Cannot read properties of undefined (reading 'length')` — surfaced by the harness as
+> `PI_AI_ERROR` with zero tokens. Reported upstream:
+> [NOirBRight/dsh-llm-ollama#6](https://github.com/NOirBRight/dsh-llm-ollama/issues/6).
+> Everything else matches upstream `0.6.28`; only the dependency range and the
+> `Context` → `TranscriptContext` type of the wrapped stream functions differ.
+>
+> `pi-ai@0.87.1` pulls two packages whose install scripts pnpm blocks by default, and a
+> git-hosted plugin builds on install — so allow those builds on the target profile **before**
+> adding the plugin:
+>
+> ~~~yaml
+> # $DSH_HOME/profiles/<profile>/pnpm-workspace.yaml
+> allowBuilds:
+>   '@google/genai': true
+>   protobufjs: true
+> ~~~
+>
+> ~~~sh
+> # install this fork instead of the upstream release
+> dsh plugin --profile <profile> add --force github:hmhmdcy/dsh-llm-ollama#v0.6.29-piai0.87.1
+>
+> # confirm the plugin and the resolved pi-ai
+> dsh plugin --profile <profile> list
+> # node_modules/@earendil-works/pi-ai/package.json -> "version": "0.87.1"
+> ~~~
+>
+> The plugin must also appear in `dsh.profile.bundles` in the profile's `package.json`. A clean
+> install adds it; a first attempt that failed on ignored builds can leave it out, in which case
+> add the entry (or remove and re-add the plugin).
+>
+> Keep the range in step with the pi-ai the Host was built against: when a DSH update ships a
+> different pi-ai line, bump `dependencies["@earendil-works/pi-ai"]` here and reinstall.
+
 Ollama Cloud integration for DeepSeek Harness. Chat uses Ollama's OpenAI-compatible Chat Completions endpoint through the shared pi-ai-backed adapter. Model discovery and the Web Search/Fetch providers remain on Ollama-native APIs because those independent capabilities are not part of the chat protocol.
 
 The package root exposes the Cordis plugin contract and OllamaAdapter. The same artifact exports ./client, which contributes the Ollama Cloud card under Settings → LLM Providers. The protocol and capability split is recorded in [ADR 0001](docs/adr/0001-separate-chat-protocol-from-ollama-capabilities.md).
@@ -39,6 +77,8 @@ dsh web
 ~~~
 
 The repository tracks release-ready lib artifacts, so GitHub installation needs no build-script allowlist.
+
+The pi-ai 0.87 compatibility fork installs straight from git, with no release artifact: see the fork note at the top of this file.
 
 ## Connection authentication and trust
 

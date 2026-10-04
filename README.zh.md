@@ -2,6 +2,41 @@
 
 [English](README.md) | 中文
 
+> **Fork 说明 —— `hmhmdcy/dsh-llm-ollama`。** 本 fork 把 pi-ai 依赖对齐到宿主版本：
+> `@earendil-works/pi-ai` 固定为 `^0.87.1`。pi-ai 0.86+ 在调用 provider 之前会把
+> `systemPrompt` 和 `tools` 折进首条 **system 消息**；由 `^0.85.1` 构建的 provider 仍按旧的
+> `Context` 理解这份 transcript，于是每个聊天请求都会死在 token 估算里，报
+> `Cannot read properties of undefined (reading 'length')`，harness 侧表现为
+> `PI_AI_ERROR` 且 0 token。上游 issue：
+> [NOirBRight/dsh-llm-ollama#6](https://github.com/NOirBRight/dsh-llm-ollama/issues/6)。
+> 其余与上游 `0.6.28` 一致，只有依赖范围和包装后的 stream 函数类型
+> （`Context` → `TranscriptContext`）不同。
+>
+> `pi-ai@0.87.1` 会带入两个默认被 pnpm 拦下安装脚本的包，而 git 安装的插件本身也要在安装时构建，
+> 所以请在目标 profile 上**先**放行构建，再添加插件：
+>
+> ~~~yaml
+> # $DSH_HOME/profiles/<profile>/pnpm-workspace.yaml
+> allowBuilds:
+>   '@google/genai': true
+>   protobufjs: true
+> ~~~
+>
+> ~~~sh
+> # 用本 fork 代替上游 release
+> dsh plugin --profile <profile> add --force github:hmhmdcy/dsh-llm-ollama#v0.6.29-piai0.87.1
+>
+> # 确认插件与解析到的 pi-ai
+> dsh plugin --profile <profile> list
+> # node_modules/@earendil-works/pi-ai/package.json -> "version": "0.87.1"
+> ~~~
+>
+> 插件还必须出现在 profile `package.json` 的 `dsh.profile.bundles` 里。干净安装会自动加入；
+> 若第一次因 ignored builds 失败，可能没写进去，此时手动补该条目（或先移除再重新添加插件）。
+>
+> 请让依赖范围与宿主内置的 pi-ai 保持一致：DSH 升级若换了 pi-ai 大版本线，就改这里
+> `dependencies["@earendil-works/pi-ai"]` 后重装。
+
 DeepSeek Harness 的 Ollama Cloud 集成。聊天通过共享的 pi-ai adapter 使用 Ollama 的 OpenAI-compatible Chat Completions；模型发现和 Web Search/Fetch 继续使用 Ollama 原生 API，因为这些独立能力不属于聊天协议。
 
 包根入口公开 Cordis plugin contract 和 OllamaAdapter。同一 artifact 还导出 ./client，在 Settings → LLM Providers 中提供 Ollama Cloud 卡片。协议与能力分离决策记录在 [ADR 0001](docs/adr/0001-separate-chat-protocol-from-ollama-capabilities.zh.md)。
@@ -27,6 +62,8 @@ dsh web
 ~~~
 
 仓库跟踪可直接发布的 lib artifacts，因此 GitHub 安装不需要 build-script allowlist。
+
+pi-ai 0.87 兼容 fork 可直接从 git 安装，不需要 release 工件：见文件顶部的 Fork 说明。
 
 ## Connection 身份验证与信任
 

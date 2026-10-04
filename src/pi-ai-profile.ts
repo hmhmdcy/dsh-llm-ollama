@@ -9,7 +9,7 @@
 
 import { createProvider } from '@earendil-works/pi-ai'
 import { openAICompletionsApi } from '@earendil-works/pi-ai/api/openai-completions.lazy'
-import type { Api, AssistantMessageEventStream, Context as PiContext, Model, Provider, StreamOptions } from '@earendil-works/pi-ai'
+import type { Api, AssistantMessageEventStream, Model, Provider, StreamOptions, TranscriptContext } from '@earendil-works/pi-ai'
 import type { ResolvedPiAiProviderProfile } from '@deepseek-ai/dsh-llm-pi-ai'
 import {
   OLLAMA_PROVIDER,
@@ -65,9 +65,14 @@ function toPiAiModel(
   }
 }
 
+/**
+ * pi-ai 0.86+ hands providers a transcript (`{ messages }`, with `systemPrompt` and the
+ * tool declarations folded into a leading system message) instead of the legacy
+ * `Context`, so the wrapped stream functions are typed against `TranscriptContext`.
+ */
 function withOllamaWire(
-  streamFn: (model: Model<Api>, context: PiContext, options?: StreamOptions) => AssistantMessageEventStream,
-): (model: Model<Api>, context: PiContext, options?: StreamOptions) => AssistantMessageEventStream {
+  streamFn: (model: Model<Api>, context: TranscriptContext, options?: StreamOptions) => AssistantMessageEventStream,
+): (model: Model<Api>, context: TranscriptContext, options?: StreamOptions) => AssistantMessageEventStream {
   return (model, context, options) => {
     const parsed = parseOllamaPickerId(model.id)
     const next = parsed.wireId === model.id ? model : { ...model, id: parsed.wireId }
